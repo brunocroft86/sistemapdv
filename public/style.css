@@ -1,0 +1,56 @@
+body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #eef2f5; height: 100vh; overflow: hidden; }
+
+/* Layout */
+.main-layout { display: flex; height: 100vh; }
+.left-panel { flex: 2; padding: 20px; overflow-y: auto; }
+.right-panel { flex: 1; background: white; border-left: 2px solid #ddd; display: flex; flex-direction: column; padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.05); }
+
+/* Navegação */
+nav { margin-bottom: 20px; display: flex; gap: 10px; }
+nav button { padding: 12px 20px; border: none; background: #dfe4ea; cursor: pointer; border-radius: 8px; font-weight: bold; color: #555; }
+nav button.active { background: #2c3e50; color: white; }
+
+/* Grid Produtos e Efeito DRAG & DROP */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+.card { background: white; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; user-select: none; }
+.card:hover { border-color: #f39c12; transform: translateY(-3px); }
+.card h3 { margin: 8px 0; font-size: 16px; color: #333; }
+.card .price { font-weight: bold; color: #27ae60; font-size: 1.2em; }
+
+/* Classe criada automaticamente quando arrasta */
+.sortable-ghost { opacity: 0.4; background: #ffeaa7; border: 2px dashed #fdcb6e; }
+
+/* Carrinho */
+.cart-items { flex: 1; overflow-y: auto; border-bottom: 2px solid #eee; margin-bottom: 10px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f2f6; }
+.btn-remove { color: #e74c3c; cursor: pointer; font-weight: bold; margin-left: 10px; padding: 0 5px; }
+
+/* Pagamento */
+.cart-footer { background: #f8f9fa; padding: 20px; border-radius: 12px; }
+.total-row { font-size: 1.8em; font-weight: bold; text-align: right; margin-bottom: 15px; color: #2c3e50; }
+.payment-area select, .payment-area input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; }
+.change-row { font-weight: bold; color: #e67e22; text-align: right; margin-bottom: 10px; font-size: 1.2em; }
+.btn-checkout { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; font-size: 1.2em; font-weight: bold; cursor: pointer; border-radius: 8px; }
+.btn-checkout:hover { background: #219150; }
+
+/* Formulários e Tabelas */
+.form-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+.form-group { display: flex; gap: 10px; margin-top: 10px; }
+.form-group input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex: 1; }
+.form-group button { background: #3498db; color: white; border: none; padding: 0 20px; border-radius: 5px; cursor: pointer; }
+
+table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+th { background-color: #ecf0f1; color: #333; }
+
+/* Filtros Relatório */
+.filter-row { display: flex; gap: 15px; align-items: flex-end; margin-top: 10px; }
+.filter-row label { display: block; font-size: 0.9em; margin-bottom: 5px; }
+.btn-filter { background: #2c3e50 !important; color: white; }
+.btn-clear { background: #95a5a6 !important; color: white; }
+.total-display { margin-top: 15px; text-align: right; font-size: 1.5em; font-weight: bold; color: #27ae60; }
+
+/* Botões Ação */
+.btn-action { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 1.2em; margin-right: 5px; }
+.btn-edit { background: #f1c40f; color: #333; }
+.btn-delete { background: #e74c3c; color: white; }

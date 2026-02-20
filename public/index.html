@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Hamburgueria</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-layout">
+        
+        <div class="left-panel">
+            <nav>
+                <button onclick="showTab('pos')" class="active">🍔 Caixa</button>
+                <button onclick="showTab('stock')">📦 Estoque</button>
+                <button onclick="showTab('reports')">💰 Relatórios</button>
+            </nav>
+
+            <section id="pos" class="tab">
+                <div id="pos-grid" class="grid"></div>
+                <p style="text-align:center; font-size:12px; color:#999; margin-top:10px;">Dica: Arraste os itens para organizar</p>
+            </section>
+
+            <section id="stock" class="tab" style="display:none">
+                <div class="form-card">
+                    <h3 id="formTitle">Cadastrar Produto</h3>
+                    <div class="form-group">
+                        <input type="hidden" id="prodId"> 
+                        <input type="text" id="prodName" placeholder="Nome (ex: X-Bacon)">
+                        <input type="number" id="prodPrice" placeholder="Preço (R$)">
+                        <input type="number" id="prodStock" placeholder="Estoque">
+                        
+                        <button id="btnSave" onclick="saveProduct()">Salvar</button>
+                        <button id="btnCancel" onclick="cancelEdit()" style="display:none; background:#ccc; color:#333">Cancelar</button>
+                    </div>
+                </div>
+                <table id="stockTable">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+
+            <section id="reports" class="tab" style="display:none">
+                <div class="form-card filter-area">
+                    <h3>Filtrar Vendas</h3>
+                    <div class="filter-row">
+                        <div>
+                            <label>De:</label>
+                            <input type="date" id="dateStart">
+                        </div>
+                        <div>
+                            <label>Até:</label>
+                            <input type="date" id="dateEnd">
+                        </div>
+                        <button onclick="loadSales()" class="btn-filter">🔍 Buscar</button>
+                        <button onclick="clearFilters()" class="btn-clear">Limpar</button>
+                    </div>
+                    <div class="total-display">
+                        Total Vendido: <span id="periodTotal">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <table id="salesTable">
+                    <thead><tr><th>Data</th><th>Pedido</th><th>Pagto</th><th>Total</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </div>
+
+        <div class="right-panel">
+            <div class="cart-header"><h2>Pedido Atual</h2></div>
+            
+            <div id="cart-items" class="cart-items">
+                <p class="empty-msg">Carrinho vazio</p>
+            </div>
+            
+            <div class="cart-footer">
+                <div class="total-row">Total: <span id="cartTotal">R$ 0,00</span></div>
+                
+                <div class="payment-area">
+                    <label>Forma de Pagamento:</label>
+                    <select id="paymentMethod" onchange="toggleCashInput()">
+                        <option value="Dinheiro">💵 Dinheiro</option>
+                        <option value="Pix">💠 Pix</option>
+                        <option value="Cartão">💳 Cartão</option>
+                    </select>
+
+                    <div id="cashInputArea">
+                        <input type="number" id="amountPaid" placeholder="Valor Entregue (R$)" oninput="calculateChange()">
+                        <div class="change-row">Troco: <span id="changeValue">R$ 0,00</span></div>
+                    </div>
+                </div>
+
+                <button class="btn-checkout" onclick="finishSale()">✅ FINALIZAR VENDA</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
