@@ -8,12 +8,12 @@ function showTab(tabId) {
     document.getElementById(tabId).style.display = 'block';
     event.target.classList.add('active');
 
-    if(tabId === 'pos') loadProducts(); // Carrega produtos
+    if(tabId === 'pos') loadProducts(); 
     if(tabId === 'stock') loadStock();
     if(tabId === 'reports') loadSales();
 }
 
-// --- CAIXA (PDV) COM ARRASTE ---
+// --- CAIXA (PDV) ---
 async function loadProducts() {
     const res = await fetch(`${API_URL}/products`);
     const products = await res.json();
@@ -21,30 +21,32 @@ async function loadProducts() {
     grid.innerHTML = '';
     
     products.forEach(p => {
-        if(p.stock > 0) {
+        // Se o estoque for maior que 0 OU for -1 (infinito), o produto aparece no PDV
+        if(p.stock > 0 || p.stock === -1) {
             const card = document.createElement('div');
             card.className = 'card';
-            // ID Oculto para identificar o arraste
             card.setAttribute('data-id', p.id);
-            card.innerHTML = `<h3>${p.name}</h3><div class="price">R$ ${p.price.toFixed(2)}</div><small>Est: ${p.stock}</small>`;
+            
+            // Se for -1, mostra o símbolo de Infinito (∞)
+            const stockDisplay = p.stock === -1 ? '∞' : p.stock;
+            
+            card.innerHTML = `<h3>${p.name}</h3><div class="price">R$ ${p.price.toFixed(2)}</div><small>Est: ${stockDisplay}</small>`;
             card.onclick = () => addToCart(p);
             grid.appendChild(card);
         }
     });
 
-    // ATIVA O SORTABLE (DRAG & DROP)
     if (!grid.sortableInstance) {
         grid.sortableInstance = new Sortable(grid, {
             animation: 150,
             ghostClass: 'sortable-ghost',
             onEnd: function () {
-                saveNewOrder(); // Salva quando soltar
+                saveNewOrder();
             }
         });
     }
 }
 
-// Salva a ordem visual no banco
 async function saveNewOrder() {
     const grid = document.getElementById('pos-grid');
     const itemIds = Array.from(grid.children).map(card => card.getAttribute('data-id'));
@@ -59,7 +61,10 @@ async function saveNewOrder() {
 function addToCart(product) {
     const existing = cart.find(item => item.id === product.id);
     if(existing) {
-        if(existing.qtd >= product.stock) return alert("Limite de estoque atingido!");
+        // Só barra a quantidade se o produto NÃO for infinito (!== -1)
+        if(product.stock !== -1 && existing.qtd >= product.stock) {
+            return alert("Limite de estoque atingido!");
+        }
         existing.qtd++;
     } else {
         cart.push({ ...product, qtd: 1 });
@@ -148,6 +153,21 @@ async function finishSale() {
 }
 
 // --- ESTOQUE (CRUD) ---
+
+function toggleStockInput() {
+    const isInfinite = document.getElementById('prodInfinite').checked;
+    const stockInput = document.getElementById('prodStock');
+    
+    if (isInfinite) {
+        stockInput.value = '';
+        stockInput.disabled = true;
+        stockInput.style.backgroundColor = '#eee';
+    } else {
+        stockInput.disabled = false;
+        stockInput.style.backgroundColor = '#fff';
+    }
+}
+
 async function loadStock() {
     const res = await fetch(`${API_URL}/products`);
     const data = await res.json();
@@ -155,11 +175,12 @@ async function loadStock() {
     tbody.innerHTML = '';
     
     data.forEach(p => {
+        const stockDisplay = p.stock === -1 ? 'Infinito' : p.stock;
         tbody.innerHTML += `
             <tr>
                 <td>${p.name}</td>
                 <td>R$ ${p.price.toFixed(2)}</td>
-                <td>${p.stock}</td>
+                <td>${stockDisplay}</td>
                 <td>
                     <button class="btn-action btn-edit" onclick="startEdit(${p.id}, '${p.name}', ${p.price}, ${p.stock})">✏️</button>
                     <button class="btn-action btn-delete" onclick="deleteProduct(${p.id})">🗑️</button>
@@ -172,9 +193,12 @@ async function saveProduct() {
     const id = document.getElementById('prodId').value;
     const name = document.getElementById('prodName').value;
     const price = document.getElementById('prodPrice').value;
-    const stock = document.getElementById('prodStock').value;
+    const isInfinite = document.getElementById('prodInfinite').checked;
+    
+    const stock = isInfinite ? -1 : document.getElementById('prodStock').value;
 
-    if(!name || !price || !stock) return alert('Preencha tudo!');
+    if(!name || !price || (stock === '' && !isInfinite)) return alert('Preencha os campos obrigatórios!');
+    
     const body = JSON.stringify({ name, price, stock });
     const headers = { 'Content-Type': 'application/json' };
 
@@ -193,7 +217,12 @@ function startEdit(id, name, price, stock) {
     document.getElementById('prodId').value = id;
     document.getElementById('prodName').value = name;
     document.getElementById('prodPrice').value = price;
-    document.getElementById('prodStock').value = stock;
+    
+    const isInfinite = (stock === -1);
+    document.getElementById('prodInfinite').checked = isInfinite;
+    document.getElementById('prodStock').value = isInfinite ? '' : stock;
+    toggleStockInput();
+
     document.getElementById('formTitle').innerText = "Editar Produto";
     document.getElementById('btnSave').innerText = "Atualizar";
     document.getElementById('btnSave').style.background = "#f1c40f";
@@ -205,6 +234,10 @@ function cancelEdit() {
     document.getElementById('prodName').value = '';
     document.getElementById('prodPrice').value = '';
     document.getElementById('prodStock').value = '';
+    
+    document.getElementById('prodInfinite').checked = false;
+    toggleStockInput();
+
     document.getElementById('formTitle').innerText = "Cadastrar Produto";
     document.getElementById('btnSave').innerText = "Salvar";
     document.getElementById('btnSave').style.background = "#3498db";
@@ -232,7 +265,6 @@ async function loadSales() {
     let totalPeriodo = 0;
 
     allSales.forEach(s => {
-        // Converte data do banco (DD/MM/YYYY) para ISO (YYYY-MM-DD)
         const dbDatePart = s.sale_date.split(',')[0]; 
         const [day, month, year] = dbDatePart.split('/');
         const saleIso = `${year}-${month}-${day}`;
@@ -260,6 +292,21 @@ function clearFilters() {
     document.getElementById('dateStart').value = '';
     document.getElementById('dateEnd').value = '';
     loadSales();
+}
+
+// --- FILTRO DE ESTOQUE (PESQUISA) ---
+function filterStock() {
+    const term = document.getElementById('searchStock').value.toLowerCase();
+    const rows = document.querySelectorAll('#stockTable tbody tr');
+    
+    rows.forEach(row => {
+        const productName = row.cells[0].innerText.toLowerCase();
+        if (productName.includes(term)) {
+            row.style.display = ''; 
+        } else {
+            row.style.display = 'none'; 
+        }
+    });
 }
 
 loadProducts();

@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Hamburgueria</title>
+    <title>Sistema Hamburgueria - Mr Rancho</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
+    
+    <div class="header-logo">
+        <img src="img/logo-transparente-1771716474789.png" alt="Logo Mr Rancho">
+    </div>
+    
     <div class="main-layout">
         
         <div class="left-panel">
@@ -28,12 +34,24 @@
                         <input type="hidden" id="prodId"> 
                         <input type="text" id="prodName" placeholder="Nome (ex: X-Bacon)">
                         <input type="number" id="prodPrice" placeholder="Preço (R$)">
-                        <input type="number" id="prodStock" placeholder="Estoque">
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                            <input type="number" id="prodStock" placeholder="Estoque" style="width: 100px; flex: none;">
+                            <label style="font-size: 0.85em; color: #555; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                <input type="checkbox" id="prodInfinite" onchange="toggleStockInput()"> 
+                                Sem estoque
+                            </label>
+                        </div>
                         
                         <button id="btnSave" onclick="saveProduct()">Salvar</button>
                         <button id="btnCancel" onclick="cancelEdit()" style="display:none; background:#ccc; color:#333">Cancelar</button>
                     </div>
                 </div>
+
+                <div class="search-bar">
+                    <input type="text" id="searchStock" placeholder="🔍 Pesquisar produto pelo nome..." oninput="filterStock()">
+                </div>
+
                 <table id="stockTable">
                     <thead>
                         <tr>
