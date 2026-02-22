@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "Sistema Hamburgueria"
-#define MyAppVersion "1.0"
+#define MyAppVersion "2.0"
 #define MyAppPublisher "Bruno Galvao"
 #define MyAppURL "https://www.example.com/"
 #define MyAppExeName "start.bat"
